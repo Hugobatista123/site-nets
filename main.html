@@ -1,0 +1,2466 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manual Netshoes V2 - Sistema de Processos</title>
+
+  <!-- Fonte moderna e legível -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Ícones -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- CSS inline para garantir que funcione mesmo sem arquivo externo -->
+  <style>
+    /* Reset básico */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Variáveis de cores */
+    :root {
+      --primary: #6a1bb1;
+      --primary-dark: #4e1485;
+      --primary-light: #f3e8ff;
+      --secondary: #3b82f6;
+      --secondary-dark: #2563eb;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --background: #f8fafc;
+      --card-bg: #ffffff;
+      --text-dark: #1e293b;
+      --text-light: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--background);
+      color: var(--text-dark);
+      line-height: 1.6;
+    }
+
+    /* Cabeçalho */
+    .header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #fff;
+      padding: 2rem 1rem;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .header-content {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+
+    .header p {
+      opacity: 0.9;
+      font-size: 1.1rem;
+    }
+
+    /* Container principal */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto 3rem;
+      padding: 0 1rem;
+    }
+
+    /* Navegação principal */
+    .main-nav {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      background: var(--card-bg);
+      padding: 0.75rem;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .nav-btn {
+      flex: 1;
+      padding: 1rem;
+      background: transparent;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      color: var(--text-light);
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .nav-btn:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .nav-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* Seções de conteúdo */
+    .content-section {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .content-section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Cabeçalho das seções */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .section-header h2 {
+      font-size: 1.5rem;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Botões */
+    .btn-primary, .btn-secondary, .btn-danger {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+      font-size: 0.95rem;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: var(--border);
+      color: var(--text-dark);
+    }
+
+    .btn-secondary:hover {
+      background: #d1d5db;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+
+    .btn-small {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.85rem;
+    }
+
+    /* Cartões de formulário */
+    .form-card {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+    }
+
+    .form-card h3 {
+      margin-bottom: 1.5rem;
+      color: var(--text-dark);
+    }
+
+    /* Grupos de formulário */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(106, 27, 177, 0.1);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    /* Ações do formulário */
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    /* Seletor de sessão */
+    .session-selector {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .session-selector select {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: white;
+    }
+
+    /* Filtros básicos */
+    .filters {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      align-items: center;
+    }
+
+    .search-box {
+      flex: 1;
+      position: relative;
+    }
+
+    .search-box i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-light);
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.5rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    /* Filtros Avançados */
+    .filters-advanced {
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+
+    .filters-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      background: var(--primary-light);
+      cursor: pointer;
+    }
+
+    .filters-header h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: var(--primary-dark);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .advanced-filters-content {
+      padding: 1.5rem;
+      border-top: 1px solid var(--border);
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .filter-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .filter-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .filter-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    /* Container de tags para filtro */
+    .tags-filter {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      background: var(--background);
+      border-radius: 8px;
+      min-height: 60px;
+      max-height: 150px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+    }
+
+    .tag-checkbox {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.4rem 0.8rem;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .tag-checkbox:hover {
+      background: var(--primary-light);
+      border-color: var(--primary);
+    }
+
+    .tag-checkbox input[type="checkbox"] {
+      width: auto;
+      margin: 0;
+      accent-color: var(--primary);
+    }
+
+    .tag-checkbox.selected {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+
+    .tag-checkbox.selected input[type="checkbox"] {
+      accent-color: white;
+    }
+
+    .tags-filter-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    /* Estatísticas de filtros */
+    .filter-stats {
+      background: var(--primary-light);
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      color: var(--primary-dark);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .active-filters {
+      background: var(--primary);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .active-filters i {
+      font-size: 0.7rem;
+      cursor: pointer;
+    }
+
+    .active-filters i:hover {
+      opacity: 0.8;
+    }
+
+    /* Container de sessões */
+    .sessions-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .session-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      border-left: 6px solid var(--primary);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+    }
+
+    .session-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .session-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .session-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .session-color {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .session-description {
+      color: var(--text-light);
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .session-stats {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      color: var(--text-light);
+    }
+
+    .session-actions {
+      display: flex;
+      gap: 0.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Container de processos */
+    .processes-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .process-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      border-left: 6px solid var(--secondary);
+      transition: transform 0.3s ease;
+    }
+
+    .process-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .process-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .process-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .process-session {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: var(--primary-light);
+      color: var(--primary);
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .process-content {
+      color: var(--text-dark);
+      margin-bottom: 1rem;
+      line-height: 1.6;
+      white-space: pre-line;
+    }
+
+    .process-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .tag {
+      padding: 0.25rem 0.75rem;
+      background: var(--border);
+      color: var(--text-light);
+      border-radius: 20px;
+      font-size: 0.8rem;
+    }
+
+    .process-tags .tag.filter-match {
+      background: var(--primary);
+      color: white;
+      animation: pulse 0.5s ease;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    .process-actions {
+      display: flex;
+      gap: 0.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Paginação */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .pagination-btn {
+      min-width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: white;
+      color: var(--text-dark);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .pagination-btn:hover:not(:disabled) {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .pagination-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+
+    .pagination-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .pagination-ellipsis {
+      color: var(--text-light);
+      padding: 0 0.25rem;
+    }
+
+    /* Seção de exportação */
+    .export-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .export-card {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .export-card h3 {
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .export-card p {
+      color: var(--text-light);
+      margin-bottom: 1.5rem;
+    }
+
+    .export-options, .import-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .file-upload {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .backup-info {
+      display: flex;
+      gap: 2rem;
+      margin: 1.5rem 0;
+    }
+
+    .backup-stat {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+    }
+
+    .backup-stat i {
+      color: var(--primary);
+    }
+
+    /* Visualizador JSON */
+    .json-viewer {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      margin-top: 2rem;
+    }
+
+    .json-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .json-tab {
+      padding: 0.5rem 1rem;
+      background: var(--border);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .json-tab.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    #jsonPreview {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: 'Consolas', monospace;
+      font-size: 0.9rem;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    /* Estado vazio */
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      background: var(--card-bg);
+      border-radius: 12px;
+      color: var(--text-light);
+    }
+
+    .empty-state i {
+      color: var(--border);
+      margin-bottom: 1rem;
+    }
+
+    .empty-state h3 {
+      color: var(--text-dark);
+      margin-bottom: 0.5rem;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.active {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-content h3 {
+      margin-bottom: 1rem;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      justify-content: flex-end;
+    }
+
+    /* Notificações */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      background: var(--success);
+      color: white;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      transform: translateX(150%);
+      transition: transform 0.3s ease;
+      z-index: 1001;
+    }
+
+    .notification.show {
+      transform: translateX(0);
+    }
+
+    /* Utilitários */
+    .text-light {
+      color: var(--text-light);
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .sessions-container,
+      .processes-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .export-cards {
+        grid-template-columns: 1fr;
+      }
+      
+      .filters {
+        flex-direction: column;
+      }
+
+      .filter-row {
+        grid-template-columns: 1fr;
+      }
+      
+      .tags-filter {
+        max-height: 200px;
+      }
+      
+      .filter-stats {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .pagination {
+        gap: 0.25rem;
+      }
+      
+      .pagination-btn {
+        min-width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .header h1 {
+        font-size: 1.8rem;
+      }
+      
+      .main-nav {
+        flex-direction: column;
+      }
+      
+      .modal-content {
+        padding: 1.5rem;
+        width: 95%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cabeçalho -->
+  <header class="header">
+    <div class="header-content">
+      <h1><i class="fas fa-book"></i> Manual Netshoes V2</h1>
+      <p>Organize processos em sessões personalizadas</p>
+    </div>
+  </header>
+
+  <!-- Conteúdo principal -->
+  <main class="container">
+
+    <!-- Menu de navegação entre sessões e processos -->
+    <nav class="main-nav">
+      <button class="nav-btn active" data-target="sessions-section">
+        <i class="fas fa-layer-group"></i> Sessões
+      </button>
+      <button class="nav-btn" data-target="processes-section">
+        <i class="fas fa-tasks"></i> Processos
+      </button>
+      <button class="nav-btn" data-target="export-section">
+        <i class="fas fa-file-export"></i> Exportar
+      </button>
+    </nav>
+
+    <!-- Seção de Sessões -->
+    <section id="sessions-section" class="content-section active">
+      <div class="section-header">
+        <h2><i class="fas fa-layer-group"></i> Gerenciar Sessões</h2>
+        <button id="addSessionBtn" class="btn-primary">
+          <i class="fas fa-plus"></i> Nova Sessão
+        </button>
+      </div>
+
+      <!-- Formulário para criar sessão -->
+      <div id="sessionForm" class="form-card" style="display: none;">
+        <h3>Criar Nova Sessão</h3>
+        <div class="form-group">
+          <label for="sessionName">Nome da Sessão *</label>
+          <input type="text" id="sessionName" placeholder="Ex: Onboarding, Financeiro, Marketing...">
+        </div>
+        <div class="form-group">
+          <label for="sessionDescription">Descrição</label>
+          <textarea id="sessionDescription" placeholder="Descreva o propósito desta sessão..." rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="sessionColor">Cor da Sessão</label>
+          <input type="color" id="sessionColor" value="#6a1bb1">
+        </div>
+        <div class="form-actions">
+          <button id="saveSessionBtn" class="btn-primary">Salvar Sessão</button>
+          <button id="cancelSessionBtn" class="btn-secondary">Cancelar</button>
+        </div>
+      </div>
+
+      <!-- Lista de Sessões -->
+      <div class="sessions-container" id="sessionsContainer">
+        <!-- Sessões serão carregadas aqui -->
+      </div>
+    </section>
+
+    <!-- Seção de Processos -->
+    <section id="processes-section" class="content-section">
+      <div class="section-header">
+        <h2><i class="fas fa-tasks"></i> Gerenciar Processos</h2>
+        <div class="session-selector">
+          <label for="sessionSelect">Sessão:</label>
+          <select id="sessionSelect">
+            <option value="">Todas as Sessões</option>
+            <!-- Opções carregadas dinamicamente -->
+          </select>
+        </div>
+      </div>
+
+      <!-- Formulário de processo -->
+      <div class="form-card">
+        <h3>Adicionar Novo Processo</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="processTitle">Título do Processo *</label>
+            <input type="text" id="processTitle" placeholder="Nome do processo...">
+          </div>
+          <div class="form-group">
+            <label for="processSession">Sessão *</label>
+            <select id="processSession">
+              <!-- Sessões carregadas dinamicamente -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="processColor">Cor do Processo</label>
+            <input type="color" id="processColor" value="#3b82f6">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="processDescription">Descrição/Conteúdo *</label>
+          <textarea id="processDescription" placeholder="Descreva o passo a passo do processo..." rows="4"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="processTags">Tags (separadas por vírgula)</label>
+          <input type="text" id="processTags" placeholder="Ex: urgente, semanal, relatório">
+        </div>
+        <div class="form-actions">
+          <button id="addProcessBtn" class="btn-primary">
+            <i class="fas fa-plus"></i> Adicionar Processo
+          </button>
+        </div>
+      </div>
+
+      <!-- Filtros Avançados -->
+      <div class="filters-advanced">
+        <div class="filters-header" id="toggleFiltersBtn">
+          <h3><i class="fas fa-filter"></i> Filtros Avançados</h3>
+          <button class="btn-secondary btn-small">
+            <i class="fas fa-chevron-down"></i> Expandir
+          </button>
+        </div>
+        
+        <div id="advancedFilters" class="advanced-filters-content" style="display: none;">
+          <!-- Filtro por tags -->
+          <div class="filter-group">
+            <label><i class="fas fa-tags"></i> Filtrar por Tags (AND - todas as tags selecionadas):</label>
+            <div class="tags-filter" id="tagsFilterContainer">
+              <!-- Tags serão carregadas dinamicamente -->
+            </div>
+            <div class="tags-filter-actions">
+              <button id="selectAllTagsBtn" class="btn-secondary btn-small">Selecionar Todas</button>
+              <button id="clearAllTagsBtn" class="btn-secondary btn-small">Limpar Todas</button>
+            </div>
+          </div>
+
+          <!-- Filtros adicionais -->
+          <div class="filter-row">
+            <div class="filter-group">
+              <label for="sortFilter">Ordenar por:</label>
+              <select id="sortFilter">
+                <option value="newest">Mais recentes primeiro</option>
+                <option value="oldest">Mais antigos primeiro</option>
+                <option value="az">A-Z (Título)</option>
+                <option value="za">Z-A (Título)</option>
+              </select>
+            </div>
+            
+            <div class="filter-group">
+              <label for="itemsPerPage">Itens por página:</label>
+              <select id="itemsPerPage">
+                <option value="10">10</option>
+                <option value="20" selected>20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="filter-actions">
+            <button id="applyFiltersBtn" class="btn-primary">
+              <i class="fas fa-search"></i> Aplicar Filtros
+            </button>
+            <button id="resetFiltersBtn" class="btn-secondary">
+              <i class="fas fa-undo"></i> Resetar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filtros básicos -->
+      <div class="filters">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" id="searchProcesses" placeholder="Buscar processos por título, conteúdo ou tags...">
+        </div>
+        <button id="clearFiltersBtn" class="btn-secondary">
+          <i class="fas fa-times"></i> Limpar Filtros
+        </button>
+      </div>
+
+      <!-- Estatísticas de filtros -->
+      <div class="filter-stats" id="filterStats">
+        <span id="totalProcessesCount">0</span> processos encontrados
+        <span id="activeFilters" class="active-filters" style="display: none;"></span>
+      </div>
+
+      <!-- Lista de Processos -->
+      <div class="processes-container" id="processesContainer">
+        <!-- Processos serão carregados aqui -->
+      </div>
+
+      <!-- Paginação -->
+      <div class="pagination" id="pagination">
+        <!-- Paginação gerada dinamicamente -->
+      </div>
+    </section>
+
+    <!-- Seção de Exportação -->
+    <section id="export-section" class="content-section">
+      <div class="section-header">
+        <h2><i class="fas fa-file-export"></i> Exportar/Importar Dados</h2>
+      </div>
+
+      <div class="export-cards">
+        <div class="export-card">
+          <h3><i class="fas fa-download"></i> Exportar Dados</h3>
+          <p>Baixe todos os dados em formato JSON para backup ou transferência.</p>
+          <div class="export-options">
+            <button id="exportAllBtn" class="btn-primary">
+              <i class="fas fa-file-export"></i> Exportar Tudo
+            </button>
+            <button id="exportSessionsBtn" class="btn-secondary">
+              <i class="fas fa-layer-group"></i> Apenas Sessões
+            </button>
+            <button id="exportProcessesBtn" class="btn-secondary">
+              <i class="fas fa-tasks"></i> Apenas Processos
+            </button>
+          </div>
+        </div>
+
+        <div class="export-card">
+          <h3><i class="fas fa-upload"></i> Importar Dados</h3>
+          <p>Importe dados de um arquivo JSON para restaurar ou adicionar informações.</p>
+          <div class="import-options">
+            <div class="file-upload">
+              <input type="file" id="importFile" accept=".json" style="display: none;">
+              <button id="chooseFileBtn" class="btn-secondary">
+                <i class="fas fa-folder-open"></i> Escolher Arquivo
+              </button>
+              <span id="fileName">Nenhum arquivo selecionado</span>
+            </div>
+            <button id="importBtn" class="btn-primary" disabled>
+              <i class="fas fa-file-import"></i> Importar Dados
+            </button>
+          </div>
+          <div class="import-note">
+            <p><strong>Nota:</strong> A importação substituirá os dados existentes.</p>
+          </div>
+        </div>
+
+        <div class="export-card">
+          <h3><i class="fas fa-database"></i> Backup Automático</h3>
+          <p>Seus dados são salvos automaticamente no navegador.</p>
+          <div class="backup-info">
+            <div class="backup-stat">
+              <i class="fas fa-layer-group"></i>
+              <span id="sessionsCount">0</span> Sessões
+            </div>
+            <div class="backup-stat">
+              <i class="fas fa-tasks"></i>
+              <span id="processesCount">0</span> Processos
+            </div>
+          </div>
+          <button id="clearAllBtn" class="btn-danger">
+            <i class="fas fa-trash"></i> Limpar Todos os Dados
+          </button>
+        </div>
+      </div>
+
+      <!-- Visualização do JSON -->
+      <div class="json-viewer">
+        <h3>Pré-visualização dos Dados</h3>
+        <div class="json-tabs">
+          <button class="json-tab active" data-type="all">Todos os Dados</button>
+          <button class="json-tab" data-type="sessions">Sessões</button>
+          <button class="json-tab" data-type="processes">Processos</button>
+        </div>
+        <pre id="jsonPreview">Carregando dados...</pre>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal de confirmação -->
+  <div id="confirmModal" class="modal">
+    <div class="modal-content">
+      <h3 id="modalTitle">Confirmar Ação</h3>
+      <p id="modalMessage">Tem certeza que deseja realizar esta ação?</p>
+      <div class="modal-actions">
+        <button id="modalConfirmBtn" class="btn-primary">Confirmar</button>
+        <button id="modalCancelBtn" class="btn-secondary">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notificações -->
+  <div id="notification" class="notification"></div>
+
+  <!-- Script com todo o código JavaScript -->
+  <script>
+    // ===========================================
+    // SISTEMA DE DADOS
+    // ===========================================
+    const AppData = {
+      sessions: JSON.parse(localStorage.getItem('sessions')) || [],
+      processes: JSON.parse(localStorage.getItem('processes')) || [],
+      
+      saveToLocalStorage() {
+        localStorage.setItem('sessions', JSON.stringify(this.sessions));
+        localStorage.setItem('processes', JSON.stringify(this.processes));
+        this.updateStats();
+        this.updateJsonPreview();
+      },
+      
+      updateStats() {
+        const sessionsCount = document.getElementById('sessionsCount');
+        const processesCount = document.getElementById('processesCount');
+        
+        if (sessionsCount) sessionsCount.textContent = this.sessions.length;
+        if (processesCount) processesCount.textContent = this.processes.length;
+      },
+      
+      getSessionById(id) {
+        return this.sessions.find(s => s.id === id);
+      },
+      
+      getProcessesBySession(sessionId) {
+        if (!sessionId) return this.processes;
+        return this.processes.filter(p => p.sessionId === sessionId);
+      },
+      
+      generateId() {
+        return Date.now().toString(36) + Math.random().toString(36).substr(2);
+      }
+    };
+
+    // ===========================================
+    // ESTADO DOS FILTROS
+    // ===========================================
+    const filterState = {
+      selectedTags: new Set(),
+      sortBy: 'newest',
+      itemsPerPage: 20,
+      currentPage: 1,
+      searchTerm: '',
+      selectedSession: ''
+    };
+
+    // ===========================================
+    // ELEMENTOS DOM
+    // ===========================================
+    function getElements() {
+      return {
+        navBtns: document.querySelectorAll('.nav-btn'),
+        sessionsSection: document.getElementById('sessions-section'),
+        processesSection: document.getElementById('processes-section'),
+        exportSection: document.getElementById('export-section'),
+        sessionForm: document.getElementById('sessionForm'),
+        sessionName: document.getElementById('sessionName'),
+        sessionDescription: document.getElementById('sessionDescription'),
+        sessionColor: document.getElementById('sessionColor'),
+        addSessionBtn: document.getElementById('addSessionBtn'),
+        saveSessionBtn: document.getElementById('saveSessionBtn'),
+        cancelSessionBtn: document.getElementById('cancelSessionBtn'),
+        sessionsContainer: document.getElementById('sessionsContainer'),
+        processTitle: document.getElementById('processTitle'),
+        processDescription: document.getElementById('processDescription'),
+        processSession: document.getElementById('processSession'),
+        processColor: document.getElementById('processColor'),
+        processTags: document.getElementById('processTags'),
+        addProcessBtn: document.getElementById('addProcessBtn'),
+        sessionSelect: document.getElementById('sessionSelect'),
+        searchProcesses: document.getElementById('searchProcesses'),
+        clearFiltersBtn: document.getElementById('clearFiltersBtn'),
+        processesContainer: document.getElementById('processesContainer'),
+        exportAllBtn: document.getElementById('exportAllBtn'),
+        exportSessionsBtn: document.getElementById('exportSessionsBtn'),
+        exportProcessesBtn: document.getElementById('exportProcessesBtn'),
+        importFile: document.getElementById('importFile'),
+        chooseFileBtn: document.getElementById('chooseFileBtn'),
+        fileName: document.getElementById('fileName'),
+        importBtn: document.getElementById('importBtn'),
+        clearAllBtn: document.getElementById('clearAllBtn'),
+        jsonPreview: document.getElementById('jsonPreview'),
+        jsonTabs: document.querySelectorAll('.json-tab'),
+        confirmModal: document.getElementById('confirmModal'),
+        modalTitle: document.getElementById('modalTitle'),
+        modalMessage: document.getElementById('modalMessage'),
+        modalConfirmBtn: document.getElementById('modalConfirmBtn'),
+        modalCancelBtn: document.getElementById('modalCancelBtn'),
+        notification: document.getElementById('notification')
+      };
+    }
+
+    let elements = {};
+    let editingSessionId = null;
+    let modalCallback = null;
+
+    // ===========================================
+    // FUNÇÕES DE FILTRO POR TAGS
+    // ===========================================
+    
+    // Extrair todas as tags únicas dos processos
+    function getAllUniqueTags() {
+      const tagsSet = new Set();
+      
+      AppData.processes.forEach(process => {
+        if (process.tags && Array.isArray(process.tags)) {
+          process.tags.forEach(tag => tagsSet.add(tag));
+        }
+      });
+      
+      return Array.from(tagsSet).sort();
+    }
+
+    // Renderizar filtro de tags
+    function renderTagsFilter() {
+      const container = document.getElementById('tagsFilterContainer');
+      if (!container) return;
+      
+      const allTags = getAllUniqueTags();
+      
+      if (allTags.length === 0) {
+        container.innerHTML = '<p class="text-light">Nenhuma tag disponível</p>';
+        return;
+      }
+      
+      container.innerHTML = '';
+      
+      allTags.forEach(tag => {
+        const label = document.createElement('label');
+        label.className = `tag-checkbox ${filterState.selectedTags.has(tag) ? 'selected' : ''}`;
+        
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = tag;
+        checkbox.checked = filterState.selectedTags.has(tag);
+        
+        checkbox.addEventListener('change', (e) => {
+          if (e.target.checked) {
+            filterState.selectedTags.add(tag);
+          } else {
+            filterState.selectedTags.delete(tag);
+          }
+          label.classList.toggle('selected', e.target.checked);
+          updateActiveFiltersDisplay();
+        });
+        
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(` ${tag}`));
+        container.appendChild(label);
+      });
+    }
+
+    // Aplicar todos os filtros aos processos
+    function applyFilters(processes) {
+      let filtered = [...processes];
+      
+      // Filtro por sessão
+      if (filterState.selectedSession) {
+        filtered = filtered.filter(p => p.sessionId === filterState.selectedSession);
+      }
+      
+      // Filtro por busca
+      if (filterState.searchTerm) {
+        const term = filterState.searchTerm.toLowerCase();
+        filtered = filtered.filter(p => 
+          p.title.toLowerCase().includes(term) ||
+          p.description.toLowerCase().includes(term) ||
+          (p.tags && p.tags.some(tag => tag.toLowerCase().includes(term)))
+        );
+      }
+      
+      // Filtro por tags selecionadas (AND - todas as tags devem estar presentes)
+      if (filterState.selectedTags.size > 0) {
+        filtered = filtered.filter(p => {
+          if (!p.tags || p.tags.length === 0) return false;
+          return Array.from(filterState.selectedTags).every(tag => 
+            p.tags.includes(tag)
+          );
+        });
+      }
+      
+      // Ordenação
+      filtered.sort((a, b) => {
+        switch(filterState.sortBy) {
+          case 'newest':
+            return new Date(b.createdAt) - new Date(a.createdAt);
+          case 'oldest':
+            return new Date(a.createdAt) - new Date(b.createdAt);
+          case 'az':
+            return a.title.localeCompare(b.title);
+          case 'za':
+            return b.title.localeCompare(a.title);
+          default:
+            return 0;
+        }
+      });
+      
+      return filtered;
+    }
+
+    // Atualizar estatísticas dos filtros
+    function updateActiveFiltersDisplay() {
+      const activeFiltersEl = document.getElementById('activeFilters');
+      if (!activeFiltersEl) return;
+      
+      const activeFilters = [];
+      if (filterState.selectedTags.size > 0) {
+        activeFilters.push(`${filterState.selectedTags.size} tag(s)`);
+      }
+      if (filterState.searchTerm) {
+        activeFilters.push(`busca: "${filterState.searchTerm}"`);
+      }
+      if (filterState.selectedSession) {
+        const session = AppData.getSessionById(filterState.selectedSession);
+        if (session) activeFilters.push(`sessão: ${session.name}`);
+      }
+      
+      if (activeFilters.length > 0) {
+        activeFiltersEl.style.display = 'inline-flex';
+        activeFiltersEl.innerHTML = `
+          <i class="fas fa-filter"></i>
+          ${activeFilters.join(' • ')}
+          <i class="fas fa-times" onclick="resetAllFilters()" style="cursor: pointer; margin-left: 5px;"></i>
+        `;
+      } else {
+        activeFiltersEl.style.display = 'none';
+      }
+    }
+
+    // Renderizar processos com filtros
+    function renderProcessesWithFilters() {
+      const container = elements.processesContainer;
+      if (!container) return;
+      
+      // Atualizar estado dos filtros
+      filterState.searchTerm = elements.searchProcesses ? elements.searchProcesses.value.toLowerCase() : '';
+      filterState.selectedSession = elements.sessionSelect ? elements.sessionSelect.value : '';
+      
+      // Aplicar filtros
+      const filteredProcesses = applyFilters(AppData.processes);
+      const totalProcesses = filteredProcesses.length;
+      
+      // Calcular paginação
+      const totalPages = Math.ceil(totalProcesses / filterState.itemsPerPage);
+      filterState.currentPage = Math.min(filterState.currentPage, totalPages) || 1;
+      
+      const start = (filterState.currentPage - 1) * filterState.itemsPerPage;
+      const end = start + filterState.itemsPerPage;
+      const paginatedProcesses = filteredProcesses.slice(start, end);
+      
+      // Atualizar estatísticas
+      const totalEl = document.getElementById('totalProcessesCount');
+      if (totalEl) totalEl.textContent = filteredProcesses.length;
+      
+      updateActiveFiltersDisplay();
+      
+      // Renderizar cards
+      renderProcessCards(paginatedProcesses);
+      
+      // Renderizar paginação
+      renderPagination(totalPages);
+    }
+
+    // Renderizar cards de processos
+    function renderProcessCards(processes) {
+      const container = elements.processesContainer;
+      container.innerHTML = '';
+      
+      if (processes.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-tasks fa-3x"></i>
+            <h3>Nenhum processo encontrado</h3>
+            <p>Tente ajustar seus filtros ou adicionar novos processos.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      processes.forEach(process => {
+        const session = AppData.getSessionById(process.sessionId);
+        
+        const processCard = document.createElement('div');
+        processCard.className = 'process-card';
+        processCard.style.borderLeftColor = process.color;
+        
+        // Destacar tags que estão sendo filtradas
+        const highlightedTags = process.tags ? process.tags.map(tag => {
+          const isSelected = filterState.selectedTags.has(tag);
+          return `<span class="tag ${isSelected ? 'filter-match' : ''}">${tag}</span>`;
+        }).join('') : '';
+        
+        processCard.innerHTML = `
+          <div class="process-header">
+            <div>
+              <div class="process-title">${escapeHtml(process.title)}</div>
+              ${session ? `<span class="process-session">${escapeHtml(session.name)}</span>` : ''}
+            </div>
+            <div class="process-actions">
+              <button class="btn-secondary copy-process" data-id="${process.id}">
+                <i class="fas fa-copy"></i>
+              </button>
+              <button class="btn-danger delete-process" data-id="${process.id}">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+          <div class="process-content">${escapeHtml(process.description).replace(/\n/g, '<br>')}</div>
+          ${process.tags && process.tags.length > 0 ? `
+            <div class="process-tags">
+              ${highlightedTags}
+            </div>
+          ` : ''}
+          <div class="process-actions">
+            <button class="btn-secondary edit-process" data-id="${process.id}">
+              <i class="fas fa-edit"></i> Editar
+            </button>
+          </div>
+        `;
+        
+        container.appendChild(processCard);
+      });
+      
+      // Adicionar event listeners
+      document.querySelectorAll('.copy-process').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const processId = e.target.closest('button').dataset.id;
+          copyProcess(processId);
+        });
+      });
+      
+      document.querySelectorAll('.delete-process').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const processId = e.target.closest('button').dataset.id;
+          deleteProcess(processId);
+        });
+      });
+      
+      document.querySelectorAll('.edit-process').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const processId = e.target.closest('button').dataset.id;
+          editProcess(processId);
+        });
+      });
+    }
+
+    // Função auxiliar para escapar HTML
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Renderizar paginação
+    function renderPagination(totalPages) {
+      const paginationEl = document.getElementById('pagination');
+      if (!paginationEl) return;
+      
+      if (totalPages <= 1) {
+        paginationEl.innerHTML = '';
+        return;
+      }
+      
+      let html = '';
+      
+      // Botão anterior
+      html += `<button class="pagination-btn" ${filterState.currentPage === 1 ? 'disabled' : ''} onclick="changePage(${filterState.currentPage - 1})">
+        <i class="fas fa-chevron-left"></i>
+      </button>`;
+      
+      // Números das páginas
+      const maxVisible = 5;
+      let startPage = Math.max(1, filterState.currentPage - Math.floor(maxVisible / 2));
+      let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+      
+      if (endPage - startPage + 1 < maxVisible) {
+        startPage = Math.max(1, endPage - maxVisible + 1);
+      }
+      
+      if (startPage > 1) {
+        html += `<button class="pagination-btn" onclick="changePage(1)">1</button>`;
+        if (startPage > 2) {
+          html += `<span class="pagination-ellipsis">...</span>`;
+        }
+      }
+      
+      for (let i = startPage; i <= endPage; i++) {
+        html += `<button class="pagination-btn ${i === filterState.currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+      }
+      
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+          html += `<span class="pagination-ellipsis">...</span>`;
+        }
+        html += `<button class="pagination-btn" onclick="changePage(${totalPages})">${totalPages}</button>`;
+      }
+      
+      // Botão próximo
+      html += `<button class="pagination-btn" ${filterState.currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${filterState.currentPage + 1})">
+        <i class="fas fa-chevron-right"></i>
+      </button>`;
+      
+      paginationEl.innerHTML = html;
+    }
+
+    // Mudar página
+    window.changePage = function(page) {
+      filterState.currentPage = page;
+      renderProcessesWithFilters();
+    };
+
+    // Resetar todos os filtros
+    window.resetAllFilters = function() {
+      filterState.selectedTags.clear();
+      filterState.searchTerm = '';
+      filterState.selectedSession = '';
+      filterState.sortBy = 'newest';
+      filterState.currentPage = 1;
+      
+      if (elements.searchProcesses) elements.searchProcesses.value = '';
+      if (elements.sessionSelect) elements.sessionSelect.value = '';
+      
+      // Resetar checkboxes das tags
+      document.querySelectorAll('.tag-checkbox input[type="checkbox"]').forEach(cb => {
+        cb.checked = false;
+        cb.closest('.tag-checkbox')?.classList.remove('selected');
+      });
+      
+      renderProcessesWithFilters();
+      renderTagsFilter();
+    };
+
+    // ===========================================
+    // FUNÇÕES DE SESSÕES
+    // ===========================================
+    
+    // Carregar sessões nos selects
+    function loadSessions() {
+      const sessionSelect = elements.sessionSelect;
+      const processSession = elements.processSession;
+      
+      if (!sessionSelect || !processSession) return;
+      
+      // Limpar opções existentes
+      while (sessionSelect.options.length > 1) {
+        sessionSelect.remove(1);
+      }
+      
+      while (processSession.options.length > 0) {
+        processSession.remove(0);
+      }
+      
+      // Adicionar opções
+      AppData.sessions.forEach(session => {
+        const option1 = document.createElement('option');
+        option1.value = session.id;
+        option1.textContent = session.name;
+        sessionSelect.appendChild(option1);
+        
+        const option2 = document.createElement('option');
+        option2.value = session.id;
+        option2.textContent = session.name;
+        processSession.appendChild(option2);
+      });
+      
+      // Adicionar placeholder se não houver sessões
+      if (AppData.sessions.length === 0) {
+        const option = document.createElement('option');
+        option.value = '';
+        option.textContent = 'Crie uma sessão primeiro';
+        option.disabled = true;
+        processSession.appendChild(option);
+      }
+    }
+
+    // Renderizar sessões
+    function renderSessions() {
+      const container = elements.sessionsContainer;
+      if (!container) return;
+      
+      container.innerHTML = '';
+      
+      if (AppData.sessions.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-layer-group fa-3x"></i>
+            <h3>Nenhuma sessão criada</h3>
+            <p>Crie sua primeira sessão para organizar os processos.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      AppData.sessions.forEach(session => {
+        const sessionProcesses = AppData.getProcessesBySession(session.id);
+        
+        const sessionCard = document.createElement('div');
+        sessionCard.className = 'session-card';
+        sessionCard.style.borderLeftColor = session.color;
+        
+        sessionCard.innerHTML = `
+          <div class="session-header">
+            <div>
+              <div class="session-title">
+                <span class="session-color" style="background: ${session.color}"></span>
+                ${escapeHtml(session.name)}
+              </div>
+            </div>
+            <div class="session-actions">
+              <button class="btn-secondary edit-session" data-id="${session.id}">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn-danger delete-session" data-id="${session.id}">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+          <div class="session-description">${escapeHtml(session.description) || 'Sem descrição'}</div>
+          <div class="session-stats">
+            <span><i class="fas fa-tasks"></i> ${sessionProcesses.length} processos</span>
+            <span><i class="fas fa-calendar"></i> Criada em ${new Date(session.createdAt).toLocaleDateString()}</span>
+          </div>
+          <div class="session-actions">
+            <button class="btn-primary view-session" data-id="${session.id}">
+              <i class="fas fa-eye"></i> Ver Processos
+            </button>
+          </div>
+        `;
+        
+        container.appendChild(sessionCard);
+      });
+      
+      // Adicionar event listeners
+      document.querySelectorAll('.edit-session').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const sessionId = e.target.closest('button').dataset.id;
+          editSession(sessionId);
+        });
+      });
+      
+      document.querySelectorAll('.delete-session').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const sessionId = e.target.closest('button').dataset.id;
+          deleteSession(sessionId);
+        });
+      });
+      
+      document.querySelectorAll('.view-session').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const sessionId = e.target.closest('button').dataset.id;
+          viewSessionProcesses(sessionId);
+        });
+      });
+    }
+
+    // Salvar sessão
+    function saveSession() {
+      const name = elements.sessionName ? elements.sessionName.value.trim() : '';
+      const description = elements.sessionDescription ? elements.sessionDescription.value.trim() : '';
+      const color = elements.sessionColor ? elements.sessionColor.value : '#6a1bb1';
+      
+      if (!name) {
+        showNotification('Digite um nome para a sessão!', 'error');
+        if (elements.sessionName) elements.sessionName.focus();
+        return;
+      }
+      
+      if (editingSessionId) {
+        // Editar sessão existente
+        const sessionIndex = AppData.sessions.findIndex(s => s.id === editingSessionId);
+        if (sessionIndex !== -1) {
+          AppData.sessions[sessionIndex] = {
+            ...AppData.sessions[sessionIndex],
+            name,
+            description,
+            color,
+            updatedAt: new Date().toISOString()
+          };
+        }
+      } else {
+        // Criar nova sessão
+        const newSession = {
+          id: AppData.generateId(),
+          name,
+          description,
+          color,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        AppData.sessions.unshift(newSession);
+      }
+      
+      AppData.saveToLocalStorage();
+      loadSessions();
+      renderSessions();
+      
+      if (elements.sessionForm) {
+        elements.sessionForm.style.display = 'none';
+      }
+      
+      resetSessionForm();
+      
+      const message = editingSessionId ? 'Sessão atualizada!' : 'Sessão criada com sucesso!';
+      showNotification(message, 'success');
+      
+      editingSessionId = null;
+    }
+
+    // Editar sessão
+    function editSession(sessionId) {
+      const session = AppData.getSessionById(sessionId);
+      if (!session) return;
+      
+      editingSessionId = sessionId;
+      
+      if (elements.sessionName) elements.sessionName.value = session.name;
+      if (elements.sessionDescription) elements.sessionDescription.value = session.description || '';
+      if (elements.sessionColor) elements.sessionColor.value = session.color;
+      
+      if (elements.sessionForm) {
+        elements.sessionForm.style.display = 'block';
+        if (elements.sessionName) elements.sessionName.focus();
+      }
+      
+      if (elements.saveSessionBtn) {
+        elements.saveSessionBtn.textContent = 'Atualizar Sessão';
+      }
+    }
+
+    // Excluir sessão
+    function deleteSession(sessionId) {
+      const session = AppData.getSessionById(sessionId);
+      if (!session) return;
+      
+      const sessionProcesses = AppData.getProcessesBySession(sessionId);
+      
+      showConfirmModal(
+        'Excluir Sessão',
+        `Tem certeza que deseja excluir a sessão "${session.name}"? 
+        ${sessionProcesses.length > 0 ? `Esta ação também excluirá ${sessionProcesses.length} processo(s) vinculado(s).` : ''}`,
+        () => {
+          // Remover sessão
+          AppData.sessions = AppData.sessions.filter(s => s.id !== sessionId);
+          
+          // Remover processos vinculados
+          AppData.processes = AppData.processes.filter(p => p.sessionId !== sessionId);
+          
+          AppData.saveToLocalStorage();
+          loadSessions();
+          renderSessions();
+          renderProcessesWithFilters();
+          renderTagsFilter();
+          showNotification('Sessão excluída com sucesso!', 'success');
+        }
+      );
+    }
+
+    // Visualizar processos de uma sessão
+    function viewSessionProcesses(sessionId) {
+      const processNavBtn = document.querySelector('.nav-btn[data-target="processes-section"]');
+      if (processNavBtn) {
+        processNavBtn.click();
+      }
+      
+      if (elements.sessionSelect) {
+        elements.sessionSelect.value = sessionId;
+      }
+      
+      filterState.selectedSession = sessionId;
+      filterState.currentPage = 1;
+      renderProcessesWithFilters();
+    }
+
+    // Resetar formulário de sessão
+    function resetSessionForm() {
+      if (elements.sessionName) elements.sessionName.value = '';
+      if (elements.sessionDescription) elements.sessionDescription.value = '';
+      if (elements.sessionColor) elements.sessionColor.value = '#6a1bb1';
+      
+      editingSessionId = null;
+      
+      if (elements.saveSessionBtn) {
+        elements.saveSessionBtn.textContent = 'Salvar Sessão';
+      }
+    }
+
+    // ===========================================
+    // FUNÇÕES DE PROCESSOS
+    // ===========================================
+    
+    // Adicionar processo
+    function addProcess() {
+      const title = elements.processTitle ? elements.processTitle.value.trim() : '';
+      const description = elements.processDescription ? elements.processDescription.value.trim() : '';
+      const sessionId = elements.processSession ? elements.processSession.value : '';
+      const color = elements.processColor ? elements.processColor.value : '#3b82f6';
+      const tags = elements.processTags ? elements.processTags.value.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
+      
+      if (!title) {
+        showNotification('Digite um título para o processo!', 'error');
+        if (elements.processTitle) elements.processTitle.focus();
+        return;
+      }
+      
+      if (!description) {
+        showNotification('Digite uma descrição para o processo!', 'error');
+        if (elements.processDescription) elements.processDescription.focus();
+        return;
+      }
+      
+      if (!sessionId) {
+        showNotification('Selecione uma sessão para o processo!', 'error');
+        if (elements.processSession) elements.processSession.focus();
+        return;
+      }
+      
+      const newProcess = {
+        id: AppData.generateId(),
+        title,
+        description,
+        sessionId,
+        color,
+        tags,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      
+      AppData.processes.unshift(newProcess);
+      AppData.saveToLocalStorage();
+      
+      // Resetar formulário
+      if (elements.processTitle) elements.processTitle.value = '';
+      if (elements.processDescription) elements.processDescription.value = '';
+      if (elements.processColor) elements.processColor.value = '#3b82f6';
+      if (elements.processTags) elements.processTags.value = '';
+      
+      renderTagsFilter();
+      renderProcessesWithFilters();
+      showNotification('Processo adicionado com sucesso!', 'success');
+    }
+
+    // Copiar processo
+    function copyProcess(processId) {
+      const process = AppData.processes.find(p => p.id === processId);
+      if (!process) return;
+      
+      const textToCopy = `${process.title}\n\n${process.description}`;
+      
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        showNotification('Processo copiado para a área de transferência!', 'success');
+      }).catch(err => {
+        console.error('Erro ao copiar:', err);
+        showNotification('Erro ao copiar processo', 'error');
+      });
+    }
+
+    // Excluir processo
+    function deleteProcess(processId) {
+      const process = AppData.processes.find(p => p.id === processId);
+      if (!process) return;
+      
+      showConfirmModal(
+        'Excluir Processo',
+        `Tem certeza que deseja excluir o processo "${process.title}"?`,
+        () => {
+          AppData.processes = AppData.processes.filter(p => p.id !== processId);
+          AppData.saveToLocalStorage();
+          renderTagsFilter();
+          renderProcessesWithFilters();
+          showNotification('Processo excluído com sucesso!', 'success');
+        }
+      );
+    }
+
+    // Editar processo
+    function editProcess(processId) {
+      const process = AppData.processes.find(p => p.id === processId);
+      if (!process) return;
+      
+      // Preencher formulário com dados do processo
+      if (elements.processTitle) elements.processTitle.value = process.title;
+      if (elements.processDescription) elements.processDescription.value = process.description;
+      if (elements.processSession) elements.processSession.value = process.sessionId;
+      if (elements.processColor) elements.processColor.value = process.color;
+      if (elements.processTags) elements.processTags.value = process.tags ? process.tags.join(', ') : '';
+      
+      // Rolar para o formulário
+      const processNavBtn = document.querySelector('.nav-btn[data-target="processes-section"]');
+      if (processNavBtn) {
+        processNavBtn.click();
+      }
+      
+      if (elements.processTitle) elements.processTitle.focus();
+      
+      // Alterar comportamento do botão para atualizar
+      if (elements.addProcessBtn) {
+        const originalText = elements.addProcessBtn.innerHTML;
+        elements.addProcessBtn.innerHTML = '<i class="fas fa-save"></i> Atualizar Processo';
+        
+        // Remover event listeners antigos e adicionar novo
+        const newBtn = elements.addProcessBtn.cloneNode(true);
+        if (elements.addProcessBtn.parentNode) {
+          elements.addProcessBtn.parentNode.replaceChild(newBtn, elements.addProcessBtn);
+          elements.addProcessBtn = newBtn;
+          
+          elements.addProcessBtn.addEventListener('click', function updateProcess() {
+            // Atualizar processo
+            const processIndex = AppData.processes.findIndex(p => p.id === processId);
+            if (processIndex !== -1) {
+              AppData.processes[processIndex] = {
+                ...AppData.processes[processIndex],
+                title: elements.processTitle ? elements.processTitle.value.trim() : '',
+                description: elements.processDescription ? elements.processDescription.value.trim() : '',
+                sessionId: elements.processSession ? elements.processSession.value : '',
+                color: elements.processColor ? elements.processColor.value : '#3b82f6',
+                tags: elements.processTags ? elements.processTags.value.split(',').map(tag => tag.trim()).filter(tag => tag) : [],
+                updatedAt: new Date().toISOString()
+              };
+              
+              AppData.saveToLocalStorage();
+              renderTagsFilter();
+              renderProcessesWithFilters();
+              
+              // Resetar formulário e botão
+              if (elements.processTitle) elements.processTitle.value = '';
+              if (elements.processDescription) elements.processDescription.value = '';
+              if (elements.processColor) elements.processColor.value = '#3b82f6';
+              if (elements.processTags) elements.processTags.value = '';
+              
+              elements.addProcessBtn.innerHTML = originalText;
+              
+              // Restaurar event listener original
+              const restoredBtn = elements.addProcessBtn.cloneNode(true);
+              if (elements.addProcessBtn.parentNode) {
+                elements.addProcessBtn.parentNode.replaceChild(restoredBtn, elements.addProcessBtn);
+                elements.addProcessBtn = restoredBtn;
+                elements.addProcessBtn.addEventListener('click', addProcess);
+              }
+              
+              showNotification('Processo atualizado com sucesso!', 'success');
+            }
+          });
+        }
+      }
+    }
+
+    // ===========================================
+    // FUNÇÕES DE EXPORTAÇÃO
+    // ===========================================
+    
+    function exportData(type = 'all') {
+      let data, fileName;
+      
+      switch(type) {
+        case 'sessions':
+          data = { sessions: AppData.sessions };
+          fileName = `sessoes-netshoes-${new Date().toISOString().slice(0, 10)}.json`;
+          break;
+        case 'processes':
+          data = { processes: AppData.processes };
+          fileName = `processos-netshoes-${new Date().toISOString().slice(0, 10)}.json`;
+          break;
+        case 'all':
+        default:
+          data = {
+            sessions: AppData.sessions,
+            processes: AppData.processes,
+            exportedAt: new Date().toISOString(),
+            version: '1.0'
+          };
+          fileName = `backup-completo-netshoes-${new Date().toISOString().slice(0, 10)}.json`;
+      }
+      
+      const dataStr = JSON.stringify(data, null, 2);
+      const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+      
+      const linkElement = document.createElement('a');
+      linkElement.setAttribute('href', dataUri);
+      linkElement.setAttribute('download', fileName);
+      linkElement.click();
+      
+      showNotification('Dados exportados com sucesso!', 'success');
+    }
+
+    function importData() {
+      const file = elements.importFile ? elements.importFile.files[0] : null;
+      if (!file) return;
+      
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        try {
+          const importedData = JSON.parse(e.target.result);
+          
+          showConfirmModal(
+            'Importar Dados',
+            'Esta ação substituirá todos os dados atuais. Deseja continuar?',
+            () => {
+              if (importedData.sessions && importedData.processes) {
+                AppData.sessions = importedData.sessions;
+                AppData.processes = importedData.processes;
+              } else if (importedData.sessions) {
+                AppData.sessions = importedData.sessions;
+              } else if (importedData.processes) {
+                AppData.processes = importedData.processes;
+              } else {
+                showNotification('Formato de arquivo inválido!', 'error');
+                return;
+              }
+              
+              AppData.saveToLocalStorage();
+              loadSessions();
+              renderSessions();
+              renderTagsFilter();
+              renderProcessesWithFilters();
+              
+              // Resetar upload
+              if (elements.importFile) elements.importFile.value = '';
+              if (elements.fileName) elements.fileName.textContent = 'Nenhum arquivo selecionado';
+              if (elements.importBtn) elements.importBtn.disabled = true;
+              
+              showNotification('Dados importados com sucesso!', 'success');
+            }
+          );
+        } catch (error) {
+          showNotification('Erro ao ler arquivo. Verifique o formato.', 'error');
+          console.error('Erro na importação:', error);
+        }
+      };
+      
+      reader.readAsText(file);
+    }
+
+    // Atualizar pré-visualização JSON
+    AppData.updateJsonPreview = function(type = 'all') {
+      if (!elements.jsonPreview) return;
+      
+      let data;
+      
+      switch(type) {
+        case 'sessions':
+          data = { sessions: this.sessions };
+          break;
+        case 'processes':
+          data = { processes: this.processes };
+          break;
+        case 'all':
+        default:
+          data = {
+            sessions: this.sessions,
+            processes: this.processes,
+            lastUpdated: new Date().toISOString()
+          };
+      }
+      
+      elements.jsonPreview.textContent = JSON.stringify(data, null, 2);
+    };
+
+    // ===========================================
+    // FUNÇÕES AUXILIARES
+    // ===========================================
+    
+    function showConfirmModal(title, message, callback) {
+      if (elements.modalTitle) elements.modalTitle.textContent = title;
+      if (elements.modalMessage) elements.modalMessage.textContent = message;
+      
+      modalCallback = callback;
+      
+      if (elements.confirmModal) {
+        elements.confirmModal.classList.add('active');
+      }
+    }
+
+    function showNotification(message, type = 'success') {
+      const notification = elements.notification;
+      if (!notification) return;
+      
+      switch(type) {
+        case 'error':
+          notification.style.backgroundColor = '#ef4444';
+          break;
+        case 'warning':
+          notification.style.backgroundColor = '#f59e0b';
+          break;
+        case 'success':
+        default:
+          notification.style.backgroundColor = '#22c55e';
+      }
+      
+      notification.textContent = message;
+      notification.classList.add('show');
+      
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
+
+    function debounce(func, wait) {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    }
+
+    // ===========================================
+    // CONFIGURAÇÃO DE EVENT LISTENERS
+    // ===========================================
+    
+    function setupEventListeners() {
+      // Navegação
+      if (elements.navBtns && elements.navBtns.length > 0) {
+        elements.navBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const target = btn.dataset.target;
+            
+            elements.navBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            document.querySelectorAll('.content-section').forEach(section => {
+              section.classList.remove('active');
+            });
+            document.getElementById(target).classList.add('active');
+          });
+        });
+      }
+      
+      // Sessões
+      if (elements.addSessionBtn) {
+        elements.addSessionBtn.addEventListener('click', () => {
+          if (elements.sessionForm) {
+            elements.sessionForm.style.display = 'block';
+            if (elements.sessionName) {
+              elements.sessionName.focus();
+            }
+          }
+        });
+      }
+      
+      if (elements.cancelSessionBtn) {
+        elements.cancelSessionBtn.addEventListener('click', () => {
+          if (elements.sessionForm) {
+            elements.sessionForm.style.display = 'none';
+          }
+          resetSessionForm();
+        });
+      }
+      
+      if (elements.saveSessionBtn) {
+        elements.saveSessionBtn.addEventListener('click', saveSession);
+      }
+      
+      // Processos
+      if (elements.addProcessBtn) {
+        elements.addProcessBtn.addEventListener('click', addProcess);
+      }
+      
+      // Filtros
+      if (elements.sessionSelect) {
+        elements.sessionSelect.addEventListener('change', () => {
+          filterState.selectedSession = elements.sessionSelect.value;
+          filterState.currentPage = 1;
+          renderProcessesWithFilters();
+        });
+      }
+      
+      if (elements.searchProcesses) {
+        elements.searchProcesses.addEventListener('input', debounce(() => {
+          filterState.currentPage = 1;
+          renderProcessesWithFilters();
+        }, 300));
+      }
+      
+      if (elements.clearFiltersBtn) {
+        elements.clearFiltersBtn.addEventListener('click', resetAllFilters);
+      }
+      
+      // Filtros avançados
+      const toggleBtn = document.getElementById('toggleFiltersBtn');
+      const advancedFilters = document.getElementById('advancedFilters');
+      
+      if (toggleBtn && advancedFilters) {
+        toggleBtn.addEventListener('click', () => {
+          const isHidden = advancedFilters.style.display === 'none';
+          advancedFilters.style.display = isHidden ? 'block' : 'none';
+          const icon = toggleBtn.querySelector('i');
+          if (icon) {
+            icon.className = isHidden ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+          }
+          toggleBtn.querySelector('.btn-small').innerHTML = isHidden ? 
+            '<i class="fas fa-chevron-up"></i> Recolher' : 
+            '<i class="fas fa-chevron-down"></i> Expandir';
+        });
+      }
+      
+      const selectAllBtn = document.getElementById('selectAllTagsBtn');
+      const clearAllBtn = document.getElementById('clearAllTagsBtn');
+      
+      if (selectAllBtn) {
+        selectAllBtn.addEventListener('click', () => {
+          document.querySelectorAll('.tag-checkbox input[type="checkbox"]').forEach(cb => {
+            cb.checked = true;
+            filterState.selectedTags.add(cb.value);
+            cb.closest('.tag-checkbox')?.classList.add('selected');
+          });
+          updateActiveFiltersDisplay();
+        });
+      }
+      
+      if (clearAllBtn) {
+        clearAllBtn.addEventListener('click', () => {
+          document.querySelectorAll('.tag-checkbox input[type="checkbox"]').forEach(cb => {
+            cb.checked = false;
+            filterState.selectedTags.delete(cb.value);
+            cb.closest('.tag-checkbox')?.classList.remove('selected');
+          });
+          updateActiveFiltersDisplay();
+        });
+      }
+      
+      const sortFilter = document.getElementById('sortFilter');
+      if (sortFilter) {
+        sortFilter.addEventListener('change', (e) => {
+          filterState.sortBy = e.target.value;
+          filterState.currentPage = 1;
+          renderProcessesWithFilters();
+        });
+      }
+      
+      const itemsPerPage = document.getElementById('itemsPerPage');
+      if (itemsPerPage) {
+        itemsPerPage.addEventListener('change', (e) => {
+          filterState.itemsPerPage = parseInt(e.target.value);
+          filterState.currentPage = 1;
+          renderProcessesWithFilters();
+        });
+      }
+      
+      const applyBtn = document.getElementById('applyFiltersBtn');
+      if (applyBtn) {
+        applyBtn.addEventListener('click', () => {
+          filterState.currentPage = 1;
+          renderProcessesWithFilters();
+        });
+      }
+      
+      const resetBtn = document.getElementById('resetFiltersBtn');
+      if (resetBtn) {
+        resetBtn.addEventListener('click', resetAllFilters);
+      }
+      
+      // Exportação
+      if (elements.exportAllBtn) {
+        elements.exportAllBtn.addEventListener('click', () => exportData('all'));
+      }
+      
+      if (elements.exportSessionsBtn) {
+        elements.exportSessionsBtn.addEventListener('click', () => exportData('sessions'));
+      }
+      
+      if (elements.exportProcessesBtn) {
+        elements.exportProcessesBtn.addEventListener('click', () => exportData('processes'));
+      }
+      
+      if (elements.chooseFileBtn && elements.importFile) {
+        elements.chooseFileBtn.addEventListener('click', () => {
+          elements.importFile.click();
+        });
+      }
+      
+      if (elements.importFile) {
+        elements.importFile.addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (file && elements.fileName) {
+            elements.fileName.textContent = file.name;
+            if (elements.importBtn) {
+              elements.importBtn.disabled = false;
+            }
+          }
+        });
+      }
+      
+      if (elements.importBtn) {
+        elements.importBtn.addEventListener('click', importData);
+      }
+      
+      if (elements.clearAllBtn) {
+        elements.clearAllBtn.addEventListener('click', () => {
+          showConfirmModal(
+            'Limpar Todos os Dados',
+            'Tem certeza que deseja apagar TODAS as sessões e processos? Esta ação não pode ser desfeita.',
+            () => {
+              AppData.sessions = [];
+              AppData.processes = [];
+              AppData.saveToLocalStorage();
+              loadSessions();
+              renderSessions();
+              renderTagsFilter();
+              renderProcessesWithFilters();
+              showNotification('Todos os dados foram apagados!', 'success');
+            }
+          );
+        });
+      }
+      
+      // JSON tabs
+      if (elements.jsonTabs && elements.jsonTabs.length > 0) {
+        elements.jsonTabs.forEach(tab => {
+          tab.addEventListener('click', () => {
+            elements.jsonTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            AppData.updateJsonPreview(tab.dataset.type);
+          });
+        });
+      }
+      
+      // Modal
+      if (elements.modalCancelBtn) {
+        elements.modalCancelBtn.addEventListener('click', () => {
+          if (elements.confirmModal) {
+            elements.confirmModal.classList.remove('active');
+          }
+          modalCallback = null;
+        });
+      }
+      
+      if (elements.modalConfirmBtn) {
+        elements.modalConfirmBtn.addEventListener('click', () => {
+          if (modalCallback) {
+            modalCallback();
+          }
+          if (elements.confirmModal) {
+            elements.confirmModal.classList.remove('active');
+          }
+          modalCallback = null;
+        });
+      }
+      
+      // Enter nos formulários
+      if (elements.sessionName) {
+        elements.sessionName.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') saveSession();
+        });
+      }
+      
+      if (elements.processTitle) {
+        elements.processTitle.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            if (elements.processDescription) {
+              elements.processDescription.focus();
+            }
+          }
+        });
+      }
+    }
+
+    // ===========================================
+    // INICIALIZAÇÃO
+    // ===========================================
+    
+    function init() {
+      console.log('Inicializando aplicação...');
+      
+      elements = getElements();
+      
+      if (!elements.addSessionBtn || !elements.addProcessBtn) {
+        console.error('Elementos críticos não encontrados!');
+        return;
+      }
+      
+      loadSessions();
+      renderSessions();
+      renderTagsFilter();
+      renderProcessesWithFilters();
+      setupEventListeners();
+      AppData.updateStats();
+      AppData.updateJsonPreview();
+      
+      console.log('Aplicação inicializada com sucesso!');
+    }
+
+    // Iniciar quando o DOM estiver carregado
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
