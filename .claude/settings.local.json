@@ -14,7 +14,9 @@
       "Bash(node -c \"C:/Users/hugob/OneDrive/Documentos/site nets/contador.js\")",
       "Bash(node -c \"C:/Users/hugob/OneDrive/Documentos/site nets/storage.js\")",
       "Bash(node -c \"C:/Users/hugob/OneDrive/Documentos/site nets/app.js\")",
-      "Bash(node *)"
+      "Bash(node *)",
+      "Bash(git fetch *)",
+      "Bash(git push *)"
     ]
   }
 }
