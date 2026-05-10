@@ -11,10 +11,8 @@
 const Counter = {
   KEY: 'attendance_v1',
   CATEGORIES: [
-    { id: 'normal',    label: 'Normal',    icon: 'fa-circle',          color: 'var(--secondary)' },
-    { id: 'urgente',   label: 'Urgente',   icon: 'fa-bolt',            color: 'var(--danger)'    },
-    { id: 'pendente',  label: 'Pendente',  icon: 'fa-clock',           color: 'var(--warning)'   },
-    { id: 'resolvido', label: 'Resolvido', icon: 'fa-circle-check',    color: 'var(--success)'   }
+    { id: 'chat',  label: 'Chat',   icon: 'fa-comments',  color: 'var(--secondary)' },
+    { id: 'email', label: 'E-mail', icon: 'fa-envelope',  color: 'var(--primary)'   }
   ],
 
   data: {},
@@ -114,7 +112,8 @@ const Counter = {
 
     const catsHtml = this.CATEGORIES.map(c => `
       <button class="counter-cat-btn" id="counter-cat-${c.id}"
-              data-category="${c.id}" title="Adicionar 1 ${c.label}">
+              data-category="${c.id}"
+              title="Clique = +1 ${c.label} • Clique direito ou Shift+Clique = −1 ${c.label}">
         <i class="fas ${c.icon}" style="color:${c.color}"></i>
         <span class="counter-cat-label">${c.label}</span>
         <span class="counter-cat-value" data-value="${c.id}">0</span>
@@ -159,20 +158,39 @@ const Counter = {
     const bar = document.getElementById('counterBar');
     if (!bar) return;
 
-    // Cliques nas categorias = +1
+    // Cliques nas categorias:
+    //  - Clique normal       = +1
+    //  - Shift / Ctrl / Cmd  = −1 (atalho para teclado + mouse)
+    //  - Clique direito      = −1 (contextmenu suprimido)
     bar.querySelectorAll('.counter-cat-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
         const cat = btn.dataset.category;
         this._lastCategory = cat;
-        this.add(cat);
+        if (e.shiftKey || e.ctrlKey || e.metaKey) {
+          this.remove(cat);
+        } else {
+          this.add(cat);
+        }
+      });
+      btn.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        const cat = btn.dataset.category;
+        this._lastCategory = cat;
+        this.remove(cat);
       });
     });
 
-    // Botão remover (-1) — usa última categoria clicada ou "normal"
-    document.getElementById('counterRemoveBtn').addEventListener('click', () => {
-      const cat = this._lastCategory || 'normal';
-      this.remove(cat);
-    });
+    // Botão remover global (-1) — usa última categoria clicada ou "chat".
+    // Para remover de uma categoria específica, use clique direito ou
+    // Shift+Clique direto sobre ela.
+    const removeBtn = document.getElementById('counterRemoveBtn');
+    if (removeBtn) {
+      removeBtn.title = 'Remover 1 da última categoria clicada (clique direito na categoria para remover dela)';
+      removeBtn.addEventListener('click', () => {
+        const cat = this._lastCategory || 'chat';
+        this.remove(cat);
+      });
+    }
 
     // Botão zerar (com confirmação)
     document.getElementById('counterResetBtn').addEventListener('click', () => {
@@ -206,9 +224,9 @@ const Counter = {
     document.addEventListener('keydown', (e) => {
       if (this._isTyping(e.target)) return;
       if (e.key === '+' || (e.key === '=' && e.shiftKey)) {
-        this.add(this._lastCategory || 'normal');
+        this.add(this._lastCategory || 'chat');
       } else if (e.key === '-' || e.key === '_') {
-        this.remove(this._lastCategory || 'normal');
+        this.remove(this._lastCategory || 'chat');
       }
     });
   },

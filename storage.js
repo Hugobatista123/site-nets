@@ -59,6 +59,51 @@ const AppData = {
 
   generateId() {
     return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  },
+
+  // -------- Sincronização com bundle de processos (JSON oficial) --------
+  // Garante que TODA sessão e TODO processo do JSON existam no site,
+  // sobrescrevendo campos para preservar fidelidade ao conteúdo original.
+  // Não remove sessões/processos extras criados localmente que não estejam no JSON.
+  syncFromBundle(bundle) {
+    if (!bundle || typeof bundle !== 'object') return { addedSessions: 0, updatedSessions: 0, addedProcesses: 0, updatedProcesses: 0 };
+
+    const stats = { addedSessions: 0, updatedSessions: 0, addedProcesses: 0, updatedProcesses: 0 };
+
+    if (Array.isArray(bundle.sessions)) {
+      bundle.sessions.forEach(src => {
+        if (!src || !src.id) return;
+        const i = this.sessions.findIndex(s => s.id === src.id);
+        if (i === -1) {
+          this.sessions.push({ ...src });
+          stats.addedSessions++;
+        } else {
+          this.sessions[i] = { ...this.sessions[i], ...src };
+          stats.updatedSessions++;
+        }
+      });
+    }
+
+    if (Array.isArray(bundle.processes)) {
+      bundle.processes.forEach(src => {
+        if (!src || src.id == null) return;
+        const normalized = {
+          ...src,
+          tags: Array.isArray(src.tags) ? src.tags : []
+        };
+        const i = this.processes.findIndex(p => p.id === src.id);
+        if (i === -1) {
+          this.processes.push(normalized);
+          stats.addedProcesses++;
+        } else {
+          this.processes[i] = { ...this.processes[i], ...normalized };
+          stats.updatedProcesses++;
+        }
+      });
+    }
+
+    this.saveToLocalStorage();
+    return stats;
   }
 };
 
@@ -88,3 +133,9 @@ const UIPrefs = {
 // Carrega ao definir
 AppData.load();
 UIPrefs.load();
+
+// Sincroniza com o bundle oficial de processos (processos-data.js),
+// se ele tiver sido carregado antes deste arquivo.
+if (typeof window !== 'undefined' && window.ProcessosNetshoesData) {
+  AppData.syncFromBundle(window.ProcessosNetshoesData);
+}

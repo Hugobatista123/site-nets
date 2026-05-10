@@ -31,6 +31,20 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
+// Normaliza texto para busca: minúsculas, sem acentos, e qualquer
+// caractere não-alfanumérico vira espaço único. Isso faz com que
+// "check-in", "check in" e "Check-In" sejam equivalentes na busca,
+// e que "devolucao" encontre "Devolução".
+function normalizeForSearch(text) {
+  if (text == null) return '';
+  return String(text)
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
 function debounce(fn, wait) {
   let t;
   return function (...args) {
@@ -427,12 +441,15 @@ function applyFilters(processes) {
   }
 
   if (filterState.searchTerm) {
-    const term = filterState.searchTerm.toLowerCase();
-    out = out.filter(p =>
-      (p.title || '').toLowerCase().includes(term) ||
-      (p.description || '').toLowerCase().includes(term) ||
-      (p.tags || []).some(t => t.toLowerCase().includes(term))
-    );
+    const tokens = normalizeForSearch(filterState.searchTerm).split(' ').filter(Boolean);
+    if (tokens.length > 0) {
+      out = out.filter(p => {
+        const haystack = normalizeForSearch(
+          (p.title || '') + ' ' + (p.description || '') + ' ' + (p.tags || []).join(' ')
+        );
+        return tokens.every(t => haystack.includes(t));
+      });
+    }
   }
 
   if (filterState.selectedTags.size > 0) {
@@ -501,35 +518,31 @@ function renderProcessesWithFilters() {
   const filtered = applyFilters(AppData.processes);
   const total = filtered.length;
 
-  const totalPages = Math.max(1, Math.ceil(total / filterState.itemsPerPage));
-  filterState.currentPage = Math.min(filterState.currentPage, totalPages);
-  const start = (filterState.currentPage - 1) * filterState.itemsPerPage;
-  const slice = filtered.slice(start, start + filterState.itemsPerPage);
-
   updateActiveFiltersDisplay(total);
+
+  // Limpa paginação (sem limite por página)
+  if (elements.pagination) elements.pagination.innerHTML = '';
 
   // Aplicar classe de modo no container
   container.className = 'processes-container view-' + (UIPrefs.data.viewMode || 'cards');
 
-  if (slice.length === 0) {
+  if (filtered.length === 0) {
     container.innerHTML = `
       <div class="empty-state">
         <i class="fas fa-tasks fa-3x"></i>
         <h3>Nenhum processo encontrado</h3>
         <p>Tente ajustar os filtros ou cadastrar novos processos.</p>
       </div>`;
-    renderPagination(1);
     return;
   }
 
   switch (UIPrefs.data.viewMode) {
-    case 'list':  renderProcessListMode(slice, container); break;
-    case 'table': renderProcessTableMode(slice, container); break;
+    case 'list':  renderProcessListMode(filtered, container); break;
+    case 'table': renderProcessTableMode(filtered, container); break;
     case 'cards':
-    default:      renderProcessCardsMode(slice, container);
+    default:      renderProcessCardsMode(filtered, container);
   }
 
-  renderPagination(totalPages);
   attachProcessActionListeners();
 }
 
@@ -870,17 +883,6 @@ function setupEventListeners() {
       renderProcessesWithFilters();
     });
   }
-  const itemsPerPage = document.getElementById('itemsPerPage');
-  if (itemsPerPage) {
-    itemsPerPage.value = String(filterState.itemsPerPage);
-    itemsPerPage.addEventListener('change', e => {
-      filterState.itemsPerPage = parseInt(e.target.value, 10);
-      UIPrefs.set('itemsPerPage', filterState.itemsPerPage);
-      filterState.currentPage = 1;
-      renderProcessesWithFilters();
-    });
-  }
-
   // Modos de visualização
   elements.viewModeBtns.forEach(b => {
     b.classList.toggle('active', b.dataset.mode === UIPrefs.data.viewMode);
