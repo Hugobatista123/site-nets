@@ -11,6 +11,26 @@
 
   <!-- CSS local -->
   <link rel="stylesheet" href="style.css">
+
+  <!-- Hidratação do tema (antes do paint, evita flash) -->
+  <script>
+    (function () {
+      try {
+        var p = localStorage.getItem('theme');
+        if (p !== 'light' && p !== 'dark' && p !== 'system') p = 'system';
+        var r = p;
+        if (p === 'system') {
+          r = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark' : 'light';
+        }
+        document.documentElement.setAttribute('data-theme-pref', p);
+        document.documentElement.setAttribute('data-theme', r);
+      } catch (_) {
+        document.documentElement.setAttribute('data-theme-pref', 'system');
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
 </head>
 <body>
 
@@ -304,6 +324,11 @@
   <!-- ===== NOTIFICAÇÃO ===== -->
   <div id="notification" class="notification"></div>
 
+  <!-- ===== BOTÃO DE TEMA ===== -->
+  <button id="themeToggle" class="theme-toggle" aria-label="Alternar tema">
+    <i class="fas fa-desktop"></i>
+  </button>
+
   <!-- ===== BOTÃO VOLTAR AO TOPO ===== -->
   <button id="backToTop" class="back-to-top" title="Voltar ao topo">
     <i class="fas fa-arrow-up"></i>
@@ -313,6 +338,7 @@
   <script src="processos-data.js"></script>
   <script src="storage.js"></script>
   <script src="contador.js"></script>
+  <script src="theme.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

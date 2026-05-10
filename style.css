@@ -7,7 +7,7 @@
 /* ---- Reset ---- */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* ---- Variáveis ---- */
+/* ---- Variáveis (light theme — default) ---- */
 :root {
   --primary: #6a1bb1;
   --primary-dark: #4e1485;
@@ -17,14 +17,45 @@
   --success: #22c55e;
   --warning: #f59e0b;
   --danger: #ef4444;
+  --danger-dark: #dc2626;
+  --danger-light: #fee2e2;
   --background: #f8fafc;
   --card-bg: #ffffff;
+  --input-bg: #ffffff;
   --text-dark: #1e293b;
   --text-light: #64748b;
   --border: #e2e8f0;
+  --border-strong: #cbd5e1;
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
   --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.10);
+  --focus-ring: 0 0 0 3px rgba(106, 27, 177, 0.12);
+  --modal-scrim: rgba(0, 0, 0, 0.55);
+  --history-today-bg: rgba(106, 27, 177, 0.06);
   --counter-bar-height: 80px;
+}
+
+/* ---- Dark theme (pure dark — quase preto) ---- */
+:root[data-theme="dark"] {
+  --primary: #9333ea;
+  --primary-dark: #7e22ce;
+  --primary-light: #1a0f2e;
+  --secondary: #60a5fa;
+  --secondary-dark: #3b82f6;
+  --danger: #f87171;
+  --danger-dark: #ef4444;
+  --danger-light: #3b1414;
+  --background: #000000;
+  --card-bg: #0a0a0a;
+  --input-bg: #1a1a1a;
+  --text-dark: #ffffff;
+  --text-light: #888888;
+  --border: #2a2a2a;
+  --border-strong: #3a3a3a;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.6), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.7);
+  --focus-ring: 0 0 0 3px rgba(147, 51, 234, 0.35);
+  --modal-scrim: rgba(0, 0, 0, 0.75);
+  --history-today-bg: rgba(147, 51, 234, 0.12);
 }
 
 body {
@@ -295,9 +326,9 @@ body {
 .btn-primary  { background: var(--primary); color: #fff; }
 .btn-primary:hover  { background: var(--primary-dark); transform: translateY(-1px); }
 .btn-secondary { background: var(--border); color: var(--text-dark); }
-.btn-secondary:hover { background: #cbd5e1; }
+.btn-secondary:hover { background: var(--border-strong); }
 .btn-danger { background: var(--danger); color: #fff; }
-.btn-danger:hover { background: #dc2626; }
+.btn-danger:hover { background: var(--danger-dark); }
 
 .btn-small { padding: 0.4rem 0.75rem; font-size: 0.85rem; }
 
@@ -307,14 +338,14 @@ body {
   align-items: center;
   justify-content: center;
   border: 1px solid var(--border);
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 8px;
   color: var(--text-dark);
   cursor: pointer;
   transition: all 0.15s;
 }
 .icon-btn:hover { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
-.icon-btn.danger:hover { background: #fee2e2; color: var(--danger); border-color: var(--danger); }
+.icon-btn.danger:hover { background: var(--danger-light); color: var(--danger); border-color: var(--danger); }
 
 /* ============================================================
  * FORMULÁRIOS
@@ -345,14 +376,15 @@ body {
   font-family: inherit;
   font-size: 0.95rem;
   transition: border-color 0.2s, box-shadow 0.2s;
-  background: #fff;
+  background: var(--input-bg);
+  color: var(--text-dark);
 }
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(106, 27, 177, 0.12);
+  box-shadow: var(--focus-ring);
 }
 .form-grid {
   display: grid;
@@ -442,11 +474,13 @@ body {
   padding: 0.6rem 0.85rem 0.6rem 2.4rem;
   border: 1px solid var(--border);
   border-radius: 8px;
+  background: var(--input-bg);
+  color: var(--text-dark);
 }
 .process-toolbar .search-box input:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(106, 27, 177, 0.12);
+  box-shadow: var(--focus-ring);
 }
 
 .view-mode-toggle {
@@ -517,7 +551,7 @@ body {
   align-items: center;
   gap: 0.35rem;
   padding: 0.3rem 0.7rem;
-  background: #fff;
+  background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: 999px;
   font-size: 0.82rem;
@@ -745,7 +779,7 @@ body {
   padding: 0 0.6rem;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--card-bg);
   color: var(--text-dark);
   font-weight: 500;
   cursor: pointer;
@@ -824,7 +858,7 @@ body {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: var(--modal-scrim);
   z-index: 1000;
   align-items: center;
   justify-content: center;
@@ -833,7 +867,8 @@ body {
 }
 .modal.active { display: flex; animation: fadeIn 0.2s ease; }
 .modal-content {
-  background: #fff;
+  background: var(--card-bg);
+  color: var(--text-dark);
   padding: 1.5rem;
   border-radius: 12px;
   width: 100%;
@@ -898,7 +933,7 @@ body {
   top: 0;
   font-size: 0.82rem;
 }
-.history-today { background: rgba(106, 27, 177, 0.06); }
+.history-today { background: var(--history-today-bg); }
 .history-actions {
   display: flex;
   gap: 0.5rem;
@@ -993,4 +1028,68 @@ body {
     flex-wrap: wrap;
   }
   .process-row-actions { width: 100%; justify-content: flex-end; }
+}
+
+/* ============================================================
+ * BOTÃO FLUTUANTE DE TEMA (canto inferior esquerdo)
+ * ============================================================ */
+.theme-toggle {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text-dark);
+  cursor: pointer;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.15s;
+  z-index: 800;
+}
+.theme-toggle:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+.theme-toggle:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-lg), var(--focus-ring);
+}
+
+/* ============================================================
+ * AJUSTES ESPECÍFICOS DE DARK MODE
+ * (overrides pontuais quando tokens não dão conta)
+ * ============================================================ */
+
+/* Texto branco em fundos primary-light tintados (sem isso o
+   primary-dark usado como cor de texto fica ilegível no escuro). */
+:root[data-theme="dark"] .filters-header h3,
+:root[data-theme="dark"] .filter-stats,
+:root[data-theme="dark"] .process-table thead th {
+  color: var(--text-dark);
+}
+
+/* Hover de linhas da tabela: precisa elevar visualmente em vez
+   de cair pra var(--background) que no escuro é puro preto. */
+:root[data-theme="dark"] .process-table tbody tr:hover {
+  background: #1a1a1a;
+}
+
+/* Ícone do empty state: var(--border) fica invisível no escuro. */
+:root[data-theme="dark"] .empty-state i {
+  color: var(--border-strong);
+}
+
+/* Cores customizadas pelo usuário (sessões/processos):
+   suavizar em dark mode pra não queimar a vista. */
+:root[data-theme="dark"] .session-color,
+:root[data-theme="dark"] .process-session,
+:root[data-theme="dark"] .process-session-mini {
+  filter: saturate(0.7) brightness(0.85);
 }
